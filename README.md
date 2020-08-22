@@ -1,2 +1,2 @@
 # streetparking
-A USSD based app to pay tickets for a vehicle packed along a street
+A USSD based app to pay tickets for a vehicle parked along a street
