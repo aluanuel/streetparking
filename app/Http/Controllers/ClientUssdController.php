@@ -1,59 +1,51 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Http\Request;
 
 class ClientUssdController extends Controller {
-	//
-	public function index() {
-		// Reads the variables sent via POST from our gateway
-		$sessionId = Input::get('sessionId');
-		$serviceCode = Input::get('serviceCode');
-		$phoneNumber = Input::get('phoneNumber');
-		$text = Input::get('text');
+	public static function session(Request $request) {
+		//$request->all();
+		$text = $request->input('text');
+		$session_id = $request->input('sessionId');
+		$phone_number = $request->input('phoneNumber');
+		$service_code = $request->input('serviceCode');
+		$network_code = $request->input('networkCode');
 		$level = explode("*", $text);
+		//if (isset($text)) {
 
 		if ($text == "") {
-			// This is the first request. Note how we start the response with CON
-			$response = "CON Welcome to the car ticketing system.\n What would you want to do\n";
-			$response .= "1. Make ticket payment \n";
-			$response .= "2. View unpaid tickets";
-
-		} else if ($text == "1") {
-			// Business logic for first level response
-			$response = "CON Enter ticket number \n";
-		} else if ($text == "1*" . $level[1]) {
-			// This is a second level response where the user selected 1 in the first instance
-			$response = "CON Select a payment option.\n";
-			$response .= "1. MTN Mobile Money \n";
-			$response .= "2. Airtel Money";
-			//$accountNumber  = "Ticket is ".$level[1];
-
-			// This is a terminal request. Note how we start the response with END
-			//$response = "END Your account number is ".$accountNumber;
-
-		} else if ($text == "1*" . $level[1] . "*1") {
-
-			$response = "END Connecting to MTN server\nTo be continued... ";
-
-		} else if ($text == "1*" . $level[1] . "*2") {
-
-			$response = "END Connecting to Airtel server\nTo be continued... ";
-
-		} else if ($text == "2") {
-			// Business logic for first level response
-			// This is a terminal request. Note how we start the response with END
-			$response = "CON Enter vehicle number plate \n";
-		} else if ($text == "2*" . $level[1]) {
-
-			$response = "END 12345\t 31/12/2020 \t ARUA\t ";
+			$response = "CON Welcome John Doe\n";
+			$response .= "1. Account Bal\n";
+			$response .= "2. Transfer \n";
+			$response .= "3. Airtime Recharge \n";
+			$response .= "0. Exit";
+		}
+		if (isset($level[0]) && $level[0] == 1 && !isset($level[1])) {
+			$response = "END Your account Bal: \n";
+			$response .= " #50,000.00 \n";
+		}
+		if (isset($level[0]) && $level[0] == 2 && !isset($level[1])) {
+			$response = "CON Select Bank \n";
+			$response .= "1. GTB\n";
+			$response .= "2. First Bank \n";
+			$response .= "3. Access Bank \n";
+			$response .= "4. FCMB \n";
+			$response .= "0. back";
+		}
+		if (isset($level[0]) && $level[0] == 2 && isset($level[1]) && !isset($level[2])) {
+			$response = "CON enter Acct. No.\n";
 
 		}
+		if (isset($level[0]) && $level[0] == 2 && isset($level[1]) && isset($level[2])) {
 
-		// Echo the response back to the API
+			$response = "END Transaction Successful \n";
+			$response .= "thanks for patronage \n";
+
+		}
 		header('Content-type: text/plain');
 		echo $response;
-
-		return $response;
+		//}
 	}
 
 }
