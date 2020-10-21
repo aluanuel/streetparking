@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class ClientUssdController extends Controller {
 	public static function session(Request $request) {
@@ -15,33 +16,40 @@ class ClientUssdController extends Controller {
 		//if (isset($text)) {
 
 		if ($text == "") {
-			$response = "CON Welcome John Doe\n";
-			$response .= "1. Account Bal\n";
-			$response .= "2. Transfer \n";
-			$response .= "3. Airtime Recharge \n";
+			$response = "CON Welcome to the car ticketing system.\n What would you want to do\n";
+			$response .= "1. Make ticket payment \n";
+			$response .= "2. View unpaid tickets \n";
 			$response .= "0. Exit";
-		}
-		if (isset($level[0]) && $level[0] == 1 && !isset($level[1])) {
-			$response = "END Your account Bal: \n";
-			$response .= " #50,000.00 \n";
-		}
-		if (isset($level[0]) && $level[0] == 2 && !isset($level[1])) {
-			$response = "CON Select Bank \n";
-			$response .= "1. GTB\n";
-			$response .= "2. First Bank \n";
-			$response .= "3. Access Bank \n";
-			$response .= "4. FCMB \n";
-			$response .= "0. back";
-		}
-		if (isset($level[0]) && $level[0] == 2 && isset($level[1]) && !isset($level[2])) {
-			$response = "CON enter Acct. No.\n";
+		} else if (isset($level[0]) && $level[0] == 1 && !isset($level[1])) {
+			$response = "CON Enter ticket number \n";
+		} else if (isset($level[0]) && $level[0] == 1 && isset($level[1]) && !isset($level[2])) {
+			$response = "CON Select a payment option.\n";
+			$response .= "1. MTN Mobile Money \n";
+			$response .= "2. Airtel Money";
 
-		}
-		if (isset($level[0]) && $level[0] == 2 && isset($level[1]) && isset($level[2])) {
+		} else if (isset($level[0]) && $level[0] == 1 && isset($level[1]) && isset($level[2]) && $level[2] == 1 && !isset($level[3])) {
 
-			$response = "END Transaction Successful \n";
-			$response .= "thanks for patronage \n";
+			// Session::put(['phoneNumber' => '$phone_number', 'totalPrice' => '1000']);
 
+			// return Route::redirect('/paymomo', array('phoneNumber' => $phoneNumber, 'totalPrice' => '1000'));
+			$response = "END Connecting to MTN servers \n";
+
+		} else if (isset($level[0]) && $level[0] == 1 && isset($level[1]) && isset($level[2]) && $level[2] == 2 && !isset($level[3])) {
+
+			$response = "END Connecting to Airtel servers \n";
+
+		} else if (isset($level[0]) && $level[0] == 2 && !isset($level[1])) {
+
+			$response = "CON Enter vehicle number plate \n";
+
+		} else if (isset($level[0]) && $level[0] == 2 && isset($level[1])) {
+
+			$response = "END No records found\n";
+
+		} else if (isset($level[0]) && $level[0] == 0 && !isset($level[1])) {
+			$response = "END Goodbye";
+		} else {
+			$response = "END Application not found";
 		}
 		header('Content-type: text/plain');
 		echo $response;
